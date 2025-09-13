@@ -1,0 +1,25 @@
+# Core AI Framework
+langchain
+langchain-google-genai
+langchain-community
+langchain-experimental
+
+# Google Cloud SQL Connection
+cloud-sql-python-connector
+pg8000
+SQLAlchemy
+
+# API Server
+fastapi
+uvicorn[standard]
+pydantic
+dotenv
+
+
+#fastapi
+# uvicorn
+# sqlalchemy
+# pg8000
+# langchain
+# langchain-google-genai
+# langchain-community
