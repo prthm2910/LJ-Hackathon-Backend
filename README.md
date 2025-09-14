@@ -10,8 +10,8 @@
 
 ## 📖 Overview
 
+D:\LJ_Hackovate\Images\Dashboard_Overview.jpg
 
-![alt text](D:\LJ_Hackovate\Images\Dashboard_Overview.jpg)
 
 Managing personal finances is often overwhelming, with data scattered across accounts, platforms, and services.  
 This project is an **AI-powered Personal Finance Assistant** built with **React + Vite (Frontend)** and **FastAPI (Backend)**, designed to centralize, analyze, and provide **AI-driven insights** into your finances.
