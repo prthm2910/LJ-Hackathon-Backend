@@ -10,7 +10,7 @@
 
 ## 📖 Overview
 
-![image](Images\Dashboard_Overview.jpg)
+![image](Images/Dashboard_Overview.jpg)
 
 
 Managing personal finances is often overwhelming, with data scattered across accounts, platforms, and services.  
