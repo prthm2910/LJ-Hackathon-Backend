@@ -5,7 +5,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
-
+from typing import Optional
+from fastapi import FastAPI, HTTPException, Query  # Query might be missing
 # LangChain Imports
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.utilities import SQLDatabase
@@ -310,51 +311,65 @@ async def get_dashboard_summary(user_id: str = "user_001"):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/v1/transactions")
-async def add_transaction(transaction: dict, user_id: str):
+async def add_transaction(request: dict):
     """Add new transaction"""
     try:
+        # logger.info(f"🔍 Received transaction request: {request}")
+        
+        user_id = request.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+            
         engine = get_engine()
         with engine.connect() as conn:
             stmt = sqlalchemy.text("""
-                INSERT INTO Transactions (user_id, date, description, category, amount, type)
+                INSERT INTO transactions (user_id, date, description, category, amount, type)
                 VALUES (:user_id, :date, :description, :category, :amount, :type)
             """)
             
             conn.execute(stmt, {
                 "user_id": user_id,
-                "date": transaction["date"],
-                "description": transaction["description"], 
-                "category": transaction["category"],
-                "amount": transaction["amount"],
-                "type": transaction["type"]
+                "date": request["date"],
+                "description": request["description"], 
+                "category": request["category"],
+                "amount": request["amount"],
+                "type": request["type"]
             })
             conn.commit()
             
+            # logger.info("✅ Transaction added successfully")
             return {"message": "Transaction added successfully", "status": "success"}
     except Exception as e:
+        # logger.error(f"❌ Error adding transaction: {e}")
+        # logger.error(f"❌ Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post("/api/v1/assets")
-async def add_asset(asset: dict, user_id: str):
+async def add_asset(request: dict):
     """Add new asset"""
     try:
+        user_id = request.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=400, detail="user_id is required")
+            
         engine = get_engine()
         with engine.connect() as conn:
             stmt = sqlalchemy.text("""
-                INSERT INTO Assets (user_id, name, type, value)
+                INSERT INTO assets (user_id, name, type, value)
                 VALUES (:user_id, :name, :type, :value)
             """)
             
             conn.execute(stmt, {
                 "user_id": user_id,
-                "name": asset["name"],
-                "type": asset["type"],
-                "value": asset["value"]
+                "name": request["name"],
+                "type": request["type"],
+                "value": request["value"]
             })
             conn.commit()
             
             return {"message": "Asset added successfully", "status": "success"}
     except Exception as e:
+        #logger.error(f"❌ Error adding asset: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post("/api/v1/investments")
@@ -622,6 +637,78 @@ async def get_dashboard_overview(user_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# Add to your agent.py
+@app.get("/api/v1/transactions/all")
+async def get_all_transactions(
+    user_id: str,
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    search: Optional[str] = None,
+    category: Optional[str] = None
+):
+    try:
+        print(f"🔍 DEBUG: Starting transactions API call for user_id: {user_id}")
+        
+        engine = get_engine()
+        print("✅ DEBUG: Database engine created successfully")
+        
+        with engine.connect() as conn:
+            print("✅ DEBUG: Database connection established")
+            
+            # Simple query first to test
+            test_query = "SELECT COUNT(*) FROM transactions WHERE user_id = :user_id"
+            print(f"🔍 DEBUG: Testing with query: {test_query}")
+            
+            test_result = conn.execute(sqlalchemy.text(test_query), {"user_id": user_id})
+            count = test_result.fetchone()[0]
+            print(f"✅ DEBUG: Found {count} transactions for user")
+            
+            # Simple select query
+            query = """
+                SELECT 
+                    date,
+                    description,
+                    category,
+                    amount,
+                    type
+                FROM transactions 
+                WHERE user_id = :user_id
+                ORDER BY date DESC 
+                LIMIT :limit OFFSET :offset
+            """
+            
+            offset = (page - 1) * limit
+            params = {"user_id": user_id, "limit": limit, "offset": offset}
+            
+            print(f"🔍 DEBUG: Executing main query with params: {params}")
+            
+            result = conn.execute(sqlalchemy.text(query), params)
+            transactions = []
+            
+            for row in result.fetchall():
+                transactions.append({
+                    "date": str(row[0]),
+                    "description": row[1],
+                    "category": row[2],
+                    "amount": float(row[3]),
+                    "type": row[4]
+                })
+            
+            print(f"✅ DEBUG: Successfully fetched {len(transactions)} transactions")
+            
+            return {
+                "transactions": transactions,
+                "totalCount": count,
+                "totalPages": (count + limit - 1) // limit,
+                "currentPage": page
+            }
+            
+    except Exception as e:
+        print(f"❌ ERROR in get_all_transactions: {str(e)}")
+        print(f"❌ ERROR type: {type(e)}")
+        import traceback
+        print(f"❌ TRACEBACK: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 @app.get("/api/v1/dashboard/charts")
 async def get_dashboard_charts(user_id: str, period: str = "6months"):
