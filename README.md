@@ -11,7 +11,7 @@
 ## 📖 Overview
 
 
-![alt text](<WhatsApp Image 2025-09-14 at 10.54.14_5fb41520.jpg>)
+![alt text](<D:\LJ_Hackovate\WhatsApp Image 2025-09-14 at 10.54.11_39d42ff3.jpg>)
 
 Managing personal finances is often overwhelming, with data scattered across accounts, platforms, and services.  
 This project is an **AI-powered Personal Finance Assistant** built with **React + Vite (Frontend)** and **FastAPI (Backend)**, designed to centralize, analyze, and provide **AI-driven insights** into your finances.
@@ -90,7 +90,7 @@ npm run dev
 Frontend will start on **http://localhost:5173/**  
 
 ---
-![alt text](<WhatsApp Image 2025-09-14 at 10.54.40_d9b2a13d.jpg>)
+![alt text](<D:\LJ_Hackovate\WhatsApp Image 2025-09-14 at 10.54.37_754b400a.jpg>)
 ## ☁️ Google Cloud SQL Setup
 
 1. Create a **Google Cloud SQL instance** (PostgreSQL/MySQL).  
@@ -133,7 +133,7 @@ Final JSON Response → Rendered in React (Charts + AI Chat)
 _Add screenshots of your dashboard, AI chat, and graphs here._
 
 ---
-![alt text](<WhatsApp Image 2025-09-14 at 10.55.28_b93b8213.jpg>)
+![alt text](<D:\LJ_Hackovate\WhatsApp Image 2025-09-14 at 10.55.25_15a6b707.jpg>)
 ## 🤝 Contributors
 - 👨‍💻 Your Name  
 - 👩‍💻 Team Member  
